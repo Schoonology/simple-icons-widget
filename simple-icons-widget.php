@@ -1,8 +1,29 @@
 <?php
 /**
- * simple-icons-widget wraps the fantastic simple-icons package.
+ * Plugin Name: Simple Icons Widget
+ * Plugin URI: http://schoonology.com
+ * Description: A widget that wraps the fantastic simple-icons package as a menu.
+ * Version: 0.1
+ * Author: Michael Schoonmaker
+ * Author URI: http://schoonology.com
  *
  * To browse the icons, check out simpleicons.org.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
+
+/**
+ * Register our widget.
+ */
+add_action( 'widgets_init', 'register_simple_icons_widget' );
+function register_simple_icons_widget() {
+  register_widget( 'Simple_Icons_Widget' );
+}
+
+/**
+ * The Widget implementation.
  */
 class Simple_Icons_Widget extends WP_Widget {
 
@@ -78,11 +99,5 @@ class Simple_Icons_Widget extends WP_Widget {
     return $instance;
   }
 
-} // class Simple_Icons_Widget
-
-// register Simple_Icons_Widget widget
-function register_simple_icons_widget() {
-    register_widget( 'Simple_Icons_Widget' );
 }
-add_action( 'widgets_init', 'register_simple_icons_widget' );
 ?>
