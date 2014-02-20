@@ -22,6 +22,13 @@ function register_simple_icons_widget() {
   register_widget( 'Simple_Icons_Widget' );
 }
 
+$simple_icon_data_arr = json_decode(file_get_contents(plugin_dir_path(__FILE__) . 'assets/simple-icons.json'));
+$simple_icon_data = array();
+foreach ($simple_icon_data_arr as $icon) {
+  $simple_icon_data[$icon->name] = $icon;
+}
+
+
 /**
  * The Widget implementation.
  */
@@ -34,7 +41,7 @@ class Simple_Icons_Widget extends WP_Widget {
     parent::__construct(
       'simple_icons_widget', // Base ID
       __('Simple Icons Widget', 'text_domain'), // Name
-      array( 'description' => __( 'Displays Simple Icons as a menu', 'text_domain' ), ) // Args
+      array( 'description' => __( 'Displays Simple Icons as a menu.', 'text_domain' ), ) // Args
     );
   }
 
@@ -48,12 +55,28 @@ class Simple_Icons_Widget extends WP_Widget {
    */
   public function widget( $args, $instance ) {
     $title = apply_filters( 'widget_title', $instance['title'] );
+    $manifest = json_decode($instance['manifest']);
+    global $simple_icon_data;
 
     echo $args['before_widget'];
-    if ( ! empty( $title ) )
+    if (!empty($title)) {
       echo $args['before_title'] . $title . $args['after_title'];
+    }
 
-    echo '<pre><code>' . $instance['data'] . '</pre></code>';
+    if (!empty($manifest)) {
+      echo '<ul>';
+      foreach ($manifest as $item) {
+        ?>
+        <li style="float:left;"><a href="<?php echo $item->href; ?>">
+          <img style="background: #<?php echo $simple_icon_data[$item->name]->hex; ?>;" width="64px" height="64px" src="<?php echo plugin_dir_url(__FILE__) . 'assets/icons/' . strtolower($item->name) . '/' . strtolower($item->name) . '-128.png' ?>" alt="<?php echo $item->name; ?>">
+        </a></li>
+        <?php
+      }
+      echo '<li style="clear:both;"></li>';
+      echo '</ul>';
+    } else {
+      echo 'Bad Manifest. <em>Please fix.</em>';
+    }
 
     echo $args['after_widget'];
   }
@@ -66,17 +89,21 @@ class Simple_Icons_Widget extends WP_Widget {
    * @param array $instance Previously saved values from database.
    */
   public function form( $instance ) {
-    if ( isset( $instance[ 'title' ] ) ) {
-      $title = $instance[ 'title' ];
-    }
-    else {
-      $title = __( '', 'text_domain' );
-    }
+    $instance = wp_parse_args((array)$instance, array('title' => '', 'manifest' => '[]'));
+    $title = strip_tags($instance['title']);
+    $manifest = $instance['manifest'];
+
     ?>
     <p>
-    <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
-    <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
-    <textarea id="<?php echo $this->get_field_id( 'data' ); ?>" name="<?php echo $this->get_field_name( 'data' ); ?>" value="$instance['data']">
+    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+    <input type="text" class="widefat"
+      id="<?php echo $this->get_field_id('title'); ?>"
+      name="<?php echo $this->get_field_name('title'); ?>"
+      value="<?php echo esc_attr($title); ?>">
+    <textarea class="widefat" rows="16" cols="20"
+      id="<?php echo $this->get_field_id('manifest'); ?>"
+      name="<?php echo $this->get_field_name('manifest'); ?>"
+    ><?php echo esc_textarea($manifest); ?></textarea>
     </p>
     <?php
   }
@@ -94,7 +121,7 @@ class Simple_Icons_Widget extends WP_Widget {
   public function update( $new_instance, $old_instance ) {
     $instance = array();
     $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
-    $instance['data'] = ( ! empty( $new_instance['data'] ) ) ? $new_instance['data'] : '[]';
+    $instance['manifest'] = ( ! empty( $new_instance['manifest'] ) ) ? $new_instance['manifest'] : '[]';
 
     return $instance;
   }
