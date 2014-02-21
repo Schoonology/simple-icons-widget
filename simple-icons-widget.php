@@ -72,7 +72,9 @@ class Simple_Icons_Widget extends WP_Widget {
         $slug = str_replace('.', '', $slug);
         ?>
         <li style="float:left;"><a href="<?php echo $item->href; ?>">
-          <img style="background: #<?php echo $simple_icon_data[$name]->hex; ?>;" width="64px" height="64px" src="<?php echo plugin_dir_url(__FILE__) . 'assets/icons/' . $slug . '/' . $slug . '-128.png' ?>" alt="<?php echo $name; ?>">
+          <div style="background: #<?php echo $simple_icon_data[$name]->hex; ?>; width: 48px; height: 48px; position: relative;">
+            <img style="position: absolute; top: 8px; left: 8px;" width="32px" height="32px" src="<?php echo plugin_dir_url(__FILE__) . 'assets/icons/' . $slug . '/' . $slug . '-64.png' ?>" alt="<?php echo $name; ?>">
+          </div>
         </a></li>
         <?php
       }
