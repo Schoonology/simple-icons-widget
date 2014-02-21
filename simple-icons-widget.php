@@ -66,9 +66,13 @@ class Simple_Icons_Widget extends WP_Widget {
     if (!empty($manifest)) {
       echo '<ul>';
       foreach ($manifest as $item) {
+        $name = $item->name;
+        $slug = strtolower($name);
+        $slug = str_replace(' ', '', $slug);
+        $slug = str_replace('.', '', $slug);
         ?>
         <li style="float:left;"><a href="<?php echo $item->href; ?>">
-          <img style="background: #<?php echo $simple_icon_data[$item->name]->hex; ?>;" width="64px" height="64px" src="<?php echo plugin_dir_url(__FILE__) . 'assets/icons/' . strtolower($item->name) . '/' . strtolower($item->name) . '-128.png' ?>" alt="<?php echo $item->name; ?>">
+          <img style="background: #<?php echo $simple_icon_data[$name]->hex; ?>;" width="64px" height="64px" src="<?php echo plugin_dir_url(__FILE__) . 'assets/icons/' . $slug . '/' . $slug . '-128.png' ?>" alt="<?php echo $name; ?>">
         </a></li>
         <?php
       }
